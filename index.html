@@ -25,7 +25,7 @@
         /* ── Derived tokens ── */
         :root {
             --bg: var(--seed-bg);
-            --bg-alt: #F3F4F6;
+            --bg-alt: color-mix(in srgb, var(--seed-bg), #000 4%);
             --surface: var(--seed-surface);
             --text: var(--seed-fg);
             --text-muted: var(--seed-muted);
@@ -39,6 +39,28 @@
             --radius: var(--seed-radius);
         }
 
+        /* ── Theme: Dark ── */
+        [data-theme="dark"] {
+            --seed-bg: #0F0F0F;
+            --seed-fg: #F5F5F5;
+            --seed-primary: #F59E0B;
+            --seed-accent: #FBBF24;
+            --seed-surface: #1A1A1A;
+            --seed-border: #2A2A2A;
+            --seed-muted: #9CA3AF;
+        }
+
+        /* ── Theme: Warm ── */
+        [data-theme="warm"] {
+            --seed-bg: #FBF7F0;
+            --seed-fg: #3D2B1F;
+            --seed-primary: #B45309;
+            --seed-accent: #D97706;
+            --seed-surface: #FFF9F2;
+            --seed-border: #E8D9C4;
+            --seed-muted: #8B7355;
+        }
+
         /* ── Reset ── */
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
@@ -50,12 +72,13 @@
             line-height: 1.7;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg); }
-        ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
+        ::-webkit-scrollbar-thumb { background: var(--seed-border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--seed-muted); }
 
         img { display: block; max-width: 100%; }
 
@@ -123,6 +146,45 @@
             margin: 4px 0;
             transition: all 0.3s;
         }
+
+        /* ── Theme switcher ── */
+        .theme-switch {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: 1.25rem;
+        }
+
+        .theme-dot {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            padding: 0;
+            transition: transform 0.2s, border-color 0.2s;
+            position: relative;
+        }
+
+        .theme-dot:hover { transform: scale(1.15); }
+
+        .theme-dot.active {
+            border-color: var(--accent);
+            transform: scale(1.1);
+        }
+
+        .theme-dot.active::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 1px solid var(--accent);
+            opacity: 0.3;
+        }
+
+        .theme-dot-light { background: #FAFAFA; }
+        .theme-dot-dark { background: #0F0F0F; }
+        .theme-dot-warm { background: #FBF7F0; }
 
         /* ── Hero ── */
         .hero {
@@ -557,7 +619,7 @@
 
         /* ── Print ── */
         @media print {
-            nav, .lightbox, .load-more-wrap { display: none; }
+            nav, .lightbox, .load-more-wrap, .theme-switch { display: none; }
             .section { opacity: 1; transform: none; page-break-inside: avoid; }
             .hero { min-height: auto; padding: 2rem; }
         }
@@ -583,6 +645,11 @@
         <li><a href="#closing">09</a></li>
         <li><a href="#album">Album</a></li>
     </ul>
+    <div class="theme-switch" role="group" aria-label="主题切换">
+        <button class="theme-dot theme-dot-light active" data-theme="light" aria-label="白色主题" title="白色"></button>
+        <button class="theme-dot theme-dot-dark" data-theme="dark" aria-label="黑色主题" title="黑色"></button>
+        <button class="theme-dot theme-dot-warm" data-theme="warm" aria-label="暖色主题" title="暖色"></button>
+    </div>
 </nav>
 
 <main>
@@ -858,6 +925,29 @@
             navLinks.classList.remove('open');
         });
     });
+
+    /* ── Theme switcher ── */
+    var themeDots = document.querySelectorAll('.theme-dot');
+    function setTheme(name) {
+        if (name === 'light') {
+            document.documentElement.removeAttribute('data-theme');
+        } else {
+            document.documentElement.setAttribute('data-theme', name);
+        }
+        themeDots.forEach(function (dot) {
+            dot.classList.toggle('active', dot.dataset.theme === name);
+        });
+        try { localStorage.setItem('site-theme', name); } catch (e) {}
+    }
+    themeDots.forEach(function (dot) {
+        dot.addEventListener('click', function () {
+            setTheme(dot.dataset.theme);
+        });
+    });
+    try {
+        var saved = localStorage.getItem('site-theme');
+        if (saved) setTheme(saved);
+    } catch (e) {}
 
     /* ── Section fade-in ── */
     var sectionObs = new IntersectionObserver(function (entries) {
