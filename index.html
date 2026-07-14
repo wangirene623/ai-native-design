@@ -735,9 +735,6 @@
         <figure><img src="./assets/gallery/DSC09290.JPG" alt="论坛现场" loading="lazy"><figcaption>DSC09290</figcaption></figure>
         <figure><img src="./assets/gallery/DSC09294.JPG" alt="论坛现场" loading="lazy"><figcaption>DSC09294</figcaption></figure>
         <figure><img src="./assets/gallery/DSC09298.JPG" alt="论坛现场" loading="lazy"><figcaption>DSC09298</figcaption></figure>
-        <figure><img src="./assets/gallery/DSC09302.JPG" alt="论坛现场" loading="lazy"><figcaption>DSC09302</figcaption></figure>
-        <figure><img src="./assets/gallery/DSC09306.JPG" alt="论坛现场" loading="lazy"><figcaption>DSC09306</figcaption></figure>
-        <figure><img src="./assets/gallery/DSC09309.JPG" alt="论坛现场" loading="lazy"><figcaption>DSC09309</figcaption></figure>
     </div>
 </section>
 
@@ -876,7 +873,9 @@
 
     /* ── Album lazy generation ── */
     var allImgs = [];
+    var skipNums = [9302, 9306, 9309];
     for (var n = 8861; n <= 9309; n++) {
+        if (skipNums.indexOf(n) !== -1) continue;
         allImgs.push({ src: './assets/gallery/DSC0' + n + '.JPG', caption: 'DSC0' + n });
     }
 
